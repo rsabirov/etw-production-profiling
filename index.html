@@ -1,71 +1,208 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css">
+	<title>.NET Performance</title>
 
-		<!-- Theme used for syntax highlighting of code -->
-		<link rel="stylesheet" href="lib/css/zenburn.css">
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/black.css">
 
-		<!-- Printing and PDF exports -->
-		<script>
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	<style>
+		/*********************************************
+ 		* TAGCLOUD
+ 		*********************************************/
+		span.clouditem {
+			padding-left: 0.3em;
+			padding-right: 0.3em;
+			line-height: 110%;
+		}		
+	</style>
+
+	<!-- Printing and PDF exports -->
+	<script>
 			var link = document.createElement( 'link' );
 			link.rel = 'stylesheet';
 			link.type = 'text/css';
 			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
 			document.getElementsByTagName( 'head' )[0].appendChild( link );
-		</script>
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>
-					<h1>dddd</h1>
-					Slide 1
+	</script>
+</head>
 
-					<aside class="notes">
-						Speaker notes.
-					</aside>
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section>
+				<h2>Plan</h2>
 
+				<ul>
+					<li>Crashes & dumps analysis</li>
+					<ul>
+						<li>Getting dumps (tools, dump types, what type of information it includes?)</li>												
+						<li>.NET Memory profiler (only profiler that can open dumps)</li>
+							TODO screenshot
+						<li>Visual studio (base info: loaded dlls, stacks, last exception)</li>
+							TODO check how it works with full dumps
+						<li>WinDbg (ask audience how knows? how can? how did?)</li>
+							TODO screenshot
+						<li>Workflow: open dump, google for cheatsheet, start adventure! (very like to vim:)</li>
+						<li>"True way" LINQ to Dump</li>
+							https://github.com/Microsoft/clrmd
+							https://blogs.msdn.microsoft.com/dotnet/2013/05/01/net-crash-dump-and-live-process-inspection/
+							https://github.com/Microsoft/dotnetsamples/tree/master/Microsoft.Diagnostics.Runtime/CLRMD
+
+						<li>"True way" LINQ to Dump and Live process</li>
+							DEMO LinqPad
+
+						<li>Tip: always deploy pdb files with apps</li>
+					</ul>
+
+					<li>Performance analysis</li>
+					<ul>
+						<li>Demo: performance profiling</li>
+						<li>Demo: memory trafic profiling</li>
+						<li>ETW and creating own events</li>
+						<li>Tools</li>
+						<li>Links</li>
+					</ul>
+				</ul>
+			</section>
+
+
+			<section>
+				<h1>.NET applications production profiling</h1>
+				<h2>highlighted on dotNext conference</h2>
+
+
+				<aside class="notes">
+					Goal is give overview of tools for production troubleshouting.
+				</aside>
+
+			</section>
+
+			<section>
+				<h2>dotNext conference themes</h2>
+
+				<section tagcloud shuffle>
+					<span tagcloud-weight="8">.NET&nbsp;Core</span>
+					<span tagcloud-weight="5">Profiling</span>
+					<span tagcloud-weight="5">ETW</span>
+					<span tagcloud-weight="8">Perfomance</span>
+					<span tagcloud-weight="5">Docker</span> 
+					IL
+					Rider 
+					PerfView 
+					CLR 
+					Concurency 
+					SPA 
+					WCF 
+					CoreCLR
+					<span tagcloud-weight="5">Reshaper</span>
+					<span tagcloud-weight="8">ASP.NET&nbsp;Core</span>
 				</section>
+			</section>
 
-				<section>
-					<h2>dotNext conference themes</h2>
+			<section>
+				<h2>Agenda</h2>
 
-					<section>
-    <p class="fragment grow">grow</p>
-    <p class="fragment shrink">shrink</p>
-    <p class="fragment fade-out">fade-out</p>
-    <p class="fragment fade-up">fade-up (also down, left and right!)</p>
-    <p class="fragment current-visible">visible only once</p>
-    <p class="fragment highlight-current-blue">blue only once</p>
-    <p class="fragment highlight-red">highlight-red</p>
-    <p class="fragment highlight-green">highlight-green</p>
-    <p class="fragment highlight-blue">highlight-blue</p>
-</section>
-				</section>
+				<ul>
+					<li>Crashes & dumps analysis</li>
+					<li>Perfomance analysis</li>
+					<li>Memory analysis</li>
+					<li>ETW and creating own events</li>
+					<li>Tools</li>
+					<li>Links</li>
+				</ul>
+			</section>
+
+			<section>
+				<h2>Crashes happens</h2>
+
+				<ul>
+					<li>How to get crash?</li>
+					<ul>
+						<li>Sometimes windows create it own</li>
+						<li></li>
+						<li>Use procdump</li>
+						<li>Configure automatic dump for specific app crash
+							(<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/bb787181(v=vs.85).aspx">link</a>) 
+						</li>
+					</ul>
+
+					<li>How to analyze dump?</li>
+					<ul>
+						<li>WinDbg (free)</li>
+						<li>.Net Memory profiler (from $189)</li>
+						<li>Linq! :) (free and cool)</li>
+					</ul>
+				</ul>
+			</section>
+
+			<section>
+				<h2>Summary</h2>
+
+				<h3>ETW</h3>
+				<ul>
+					<li>Fast symantic logging</li>
+					<li>Supported from Windows 7</li>
+					<li>Helps on prod enviroments</li>
+					<li>Will be supported on .NET Core (even on Linux:)</li>
+				</ul>
+			</section>
+
+			<section>
+				<h2>Tools</h2>
+
+				<ul>
+					<li>
+						Windows Performance Analyzer (<a href="https://msdn.microsoft.com/en-us/library/windows/hardware/hh448170.aspx">WPA</a>)
+						is a tool that creates graphs and data tables of Event Tracing for Windows (ETW) events that are recorded by Windows® Performance Recorder (WPR), Xperf, or an assessment that is run in the Assessment Platform. WPA can open any event trace log (ETL) file for analysis.
+					</li>
+					<!--https://msdn.microsoft.com/en-us/library/dn450840.aspx - Creating a Regions of Interest File-->
+
+					<li>
+						Xperf (<a href="https://msdn.microsoft.com/en-us/library/hh162952.aspx ">Xperf</a>
+						Xperf actions are trace processing components that collate event information to produce text reports. Actions produce summarized reports that are specific to a set of events such as registry accesses, context switches, file accesses, or system configuration.
+					</li>
+
+					<li>PerfView</li>			
+
+				</ul>
+			</section>			
+
+			<section>
+				<h2>Usefull links</h2>
 				
-				<section>
-					<h2>Slide 2</h2>
+				<ul>
+					<li><a href="https://github.com/dotnet/corefxlab">corefxlab github repo</a> - This repo is for experimentation and exploring new ideas that may or may not make it into the main corefx repo.</li>
 
-					<pre><code data-trim data-noescape>
+				</ul>
+
+			</section>
+
+			<section>
+				<h2>Slide 2</h2>
+
+				<pre>
+					<code data-trim data-noescape>
 var a = 0;
 for (int i = 0; i < n; i++)
 	a += i;
-					</code></pre>
-				</section>
-			</div>
+					</code>
+				</pre>
+			</section>
 		</div>
+	</div>
 
-		<script src="lib/js/head.min.js"></script>
-		<script src="js/reveal.js"></script>
+	<script src="lib/js/head.min.js"></script>
+	<script src="js/reveal.js"></script>
 
-		<script>
+	<script>
 			// More info https://github.com/hakimel/reveal.js#configuration
 			Reveal.initialize({
 				history: true,
@@ -75,12 +212,14 @@ for (int i = 0; i < n; i++)
 					{ src: 'plugin/markdown/marked.js' },
 					{ src: 'plugin/markdown/markdown.js' },
 					{ src: 'plugin/notes/notes.js', async: true },
-					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/tagcloud/tagcloud.js', async: true }
 				]
 			});
 
 			//  "c/t":  flattened slide number / total slides
 			Reveal.configure({ slideNumber: 'c/t' });
 		</script>
-	</body>
+</body>
+
 </html>
