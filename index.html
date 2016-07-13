@@ -1,225 +1,230 @@
-<!doctype html>
+﻿<!doctype html>
 <html>
-
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-	<title>.NET Performance</title>
-
-	<link rel="stylesheet" href="css/reveal.css">
-	<link rel="stylesheet" href="css/theme/black.css">
-
-	<!-- Theme used for syntax highlighting of code -->
-	<link rel="stylesheet" href="lib/css/zenburn.css">
-
-	<style>
-		/*********************************************
- 		* TAGCLOUD
- 		*********************************************/
-		span.clouditem {
-			padding-left: 0.3em;
-			padding-right: 0.3em;
-			line-height: 110%;
-		}		
-	</style>
-
-	<!-- Printing and PDF exports -->
-	<script>
-			var link = document.createElement( 'link' );
-			link.rel = 'stylesheet';
-			link.type = 'text/css';
-			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
-			document.getElementsByTagName( 'head' )[0].appendChild( link );
-	</script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>.NET Performance</title>
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/black.css">
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+    <style>
+        /*********************************************
+        * TAGCLOUD
+        *********************************************/
+        span.clouditem {
+            padding-left: 0.3em;
+            padding-right: 0.3em;
+            line-height: 110%;
+        }
+    </style>
+    <!-- Printing and PDF exports -->
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+        document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
 </head>
-
 <body>
-	<div class="reveal">
-		<div class="slides">
-			<section>
-				<h2>Plan</h2>
+    <div class="reveal">
+        <div class="slides">
 
-				<ul>
-					<li>Crashes & dumps analysis</li>
-					<ul>
-						<li>Getting dumps (tools, dump types, what type of information it includes?)</li>												
-						<li>.NET Memory profiler (only profiler that can open dumps)</li>
-							TODO screenshot
-						<li>Visual studio (base info: loaded dlls, stacks, last exception)</li>
-							TODO check how it works with full dumps
-						<li>WinDbg (ask audience how knows? how can? how did?)</li>
-							TODO screenshot
-						<li>Workflow: open dump, google for cheatsheet, start adventure! (very like to vim:)</li>
-						<li>"True way" LINQ to Dump</li>
-							https://github.com/Microsoft/clrmd
-							https://blogs.msdn.microsoft.com/dotnet/2013/05/01/net-crash-dump-and-live-process-inspection/
-							https://github.com/Microsoft/dotnetsamples/tree/master/Microsoft.Diagnostics.Runtime/CLRMD
+            <!--title slide-->
+            <section>
+                <h2>.NET applications production profiling</h2>
+                <p>highlighted on dotNext conference</p>
 
-						<li>"True way" LINQ to Dump and Live process</li>
-							DEMO LinqPad
+                <aside class="notes">
+                    Goal is give overview of tools for production troubleshouting.
+                </aside>
+            </section>
 
-						<li>Tip: always deploy pdb files with apps</li>
-					</ul>
+            <!--dotNext themes tag cloud-->
+            <section>
+                <h2>dotNext conference themes</h2>
 
-					<li>Performance analysis</li>
-					<ul>
-						<li>Demo: performance profiling</li>
-						<li>Demo: memory trafic profiling</li>
-						<li>ETW and creating own events</li>
-						<li>Tools</li>
-						<li>Links</li>
-					</ul>
-				</ul>
-			</section>
+                <section tagcloud shuffle>
+                    <span tagcloud-weight="8">.NET&nbsp;Core</span>
+                    <span tagcloud-weight="5">Profiling</span>
+                    <span tagcloud-weight="5">ETW</span>
+                    <span tagcloud-weight="8">Perfomance</span>
+                    <span tagcloud-weight="5">Docker</span>
+                    IL
+                    Rider
+                    PerfView
+                    CLR
+                    Concurency
+                    SPA
+                    WCF
+                    CoreCLR
+                    <span tagcloud-weight="5">Reshaper</span>
+                    <span tagcloud-weight="8">ASP.NET&nbsp;Core</span>
+                </section>
+            </section>
+
+            <!--plan-->
+            <section>
+                <h2>Plan</h2>
+                <ul>
+                    <li>Demo: performance profiling</li>
+                    <li>What is ETW?</li>
+                    <li>Demo: memory trafic profiling</li>
+                    <li>ETW and creating own events</li>
+                    <li>Tools</li>
+                    <li>Links</li>
+                </ul>
+            </section>
 
 
-			<section>
-				<h1>.NET applications production profiling</h1>
-				<h2>highlighted on dotNext conference</h2>
+
+            <!--demo 1-->
+            <section>
+                <h2>Demo 1</h2>
+
+                <aside class="notes">
+                    Demo 1: demonstraiting CPU profiling of .NET app.
+                </aside>
+            </section>
+
+            <!--What is ETW-->
+            <section>
+                <h2>Event Tracing for Windows (ETW)</h2>
+                <ul>
+                    <li>Symantic logging</li>
+                    <li>Introduced on Windows 2000</li>
+                    <li>Blazzzing fast</li>
+                    <li>Used in all Windows components and inside .NET</li>
+                    <li>Supported on .NET Core (Linux support is comming)</li>
+                </ul>
+
+                <aside class="notes">
+                    a general-purpose, high-speed tracing facility provided by the operating system.
+                    Using a buffering and logging mechanism implemented in the kernel, ETW provides a tracing mechanism for
+                    events raised by both user-mode applications and kernel-mode device drivers.
+                    Additionally, ETW gives you the ability to enable and disable logging dynamically,
+                    making it easy to perform detailed tracing in production environments without requiring reboots or application restarts.
+                    The logging mechanism uses per-processor buffers that are written to disk by an asynchronous writer thread.
+                    This allows large-scale server applications to write events with minimum disturbance.
+                </aside>
+            </section>
+
+            <!--ETW Architecture overview-->
+            <section>
+                <h2>ETW Architecture overview</h2>
+
+                <!--MSDN Magazine April 2007-->
+                <img src="img/etw-architecture-overview.png" />
+
+                <aside class="notes">
+                    The core architecture of ETW is illustrated in Figure 1. As shown, there are four main types of components in ETW:
+                    event providers, controllers, consumers, and event trace sessions. Buffering and logging take place
+                    in event tracing sessions, which accept events and create a trace file. There are a number of logging modes
+                    available for ETW sessions. For instance, a session can be configured to deliver events directly to consumer
+                    applications or to overwrite old events in a file by wrapping around when a certain size is reached.
+                    A separate writer thread created for each session flushes them to a file or to real-time consumer applications.
+                    To enable high-performance, per-processor buffers are used to eliminate the need for a lock in the logging path.
+                </aside>
+            </section>
+
+            <!--ETW Components-->
+            <section>
+                <h2>ETW Components</h2>
+
+                <dl>
+                    <dt>event provider</dt>
+                    <dd>writes events to ETW sessions (it can be any user-mode application, managed application, driver etc)</dd>
+
+                    <dt>event consumers</dt>
+                    <dd>application that reads log files or listens to a session for real time events and processes them</dd>
+
+                    <dt>controller</dt>
+                    <dd>starts and stops ETW sessions and enables providers to them.</dd>
+
+                    <dt>event trace session</dt>
+                    <dd>actual logging and buffering on separate kernel thread per session</dd>
+                </dl>
+            </section>
+
+            <!--slides there we can see ETW:
+            TODO screenshots
+            - procmon
+            - performance datacollectors
+            - performance monitor-->
 
 
-				<aside class="notes">
-					Goal is give overview of tools for production troubleshouting.
-				</aside>
+            <!--logman tool-->
+            <section>
+                <h2>logman</h2>
 
-			</section>
+                <ul>
+                    <li>
+                        <code>
+                            Logman query providers
+                        </code>
+                        to get all available providers
+                    </li>
 
-			<section>
-				<h2>dotNext conference themes</h2>
+                    <li>
+                        <code>
+                            Logman -start MyTrace -pf providers.txt –ets
+                        </code>
+                        start ETW Tracing
 
-				<section tagcloud shuffle>
-					<span tagcloud-weight="8">.NET&nbsp;Core</span>
-					<span tagcloud-weight="5">Profiling</span>
-					<span tagcloud-weight="5">ETW</span>
-					<span tagcloud-weight="8">Perfomance</span>
-					<span tagcloud-weight="5">Docker</span> 
-					IL
-					Rider 
-					PerfView 
-					CLR 
-					Concurency 
-					SPA 
-					WCF 
-					CoreCLR
-					<span tagcloud-weight="5">Reshaper</span>
-					<span tagcloud-weight="8">ASP.NET&nbsp;Core</span>
-				</section>
-			</section>
+                    </li>
+                </ul>
+            </section>
 
-			<section>
-				<h2>Agenda</h2>
+            <!--Tools-->
+            <section>
+                <h2>Tools</h2>
+                <ul>
+                    <li>PerfView (<a href="http://aka.ms/PerfView">http://aka.ms/PerfView</a>)</li>
+                    <li>Logman.exe - command-line controller (<a href="https://technet.microsoft.com/en-us/library/bb490956.aspx">Technet article</a>)</li>
+                    <li>tracerpt.exe - a general consumer tool (<a href="https://technet.microsoft.com/en-us/library/cc732700(v=ws.11).aspx">Technet article</a>)</li>
+                    <li>
+                        Windows Performance Analyzer (<a href="https://msdn.microsoft.com/en-us/library/windows/hardware/hh448170.aspx">WPA</a>)
+                        is a tool that creates graphs and data tables of Event Tracing for Windows (ETW) events that are recorded by Windows® Performance Recorder (WPR), Xperf, or an assessment that is run in the Assessment Platform. WPA can open any event trace log (ETL) file for analysis.
+                    </li>
+                    <!--https://msdn.microsoft.com/en-us/library/dn450840.aspx - Creating a Regions of Interest File-->
+                    <li>
+                        Xperf (<a href="https://msdn.microsoft.com/en-us/library/hh162952.aspx ">Xperf</a>
+                        Xperf actions are trace processing components that collate event information to produce text reports. Actions produce summarized reports that are specific to a set of events such as registry accesses, context switches, file accesses, or system configuration.
+                    </li>
+                </ul>
+            </section>
 
-				<ul>
-					<li>Crashes & dumps analysis</li>
-					<li>Perfomance analysis</li>
-					<li>Memory analysis</li>
-					<li>ETW and creating own events</li>
-					<li>Tools</li>
-					<li>Links</li>
-				</ul>
-			</section>
+            <!--Usefull links-->
+            <section>
+                <h2>Usefull links</h2>
 
-			<section>
-				<h2>Crashes happens</h2>
+                <ul>
+                    <li><a href="https://github.com/dotnet/corefxlab">corefxlab github repo</a> - This repo is for experimentation and exploring new ideas that may or may not make it into the main corefx repo.</li>
+                </ul>
+            </section>
+        </div>
+    </div>
 
-				<ul>
-					<li>How to get crash?</li>
-					<ul>
-						<li>Sometimes windows create it own</li>
-						<li></li>
-						<li>Use procdump</li>
-						<li>Configure automatic dump for specific app crash
-							(<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/bb787181(v=vs.85).aspx">link</a>) 
-						</li>
-					</ul>
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+    <script>
+        // More info https://github.com/hakimel/reveal.js#configuration
+        Reveal.initialize({
+            history: true,
 
-					<li>How to analyze dump?</li>
-					<ul>
-						<li>WinDbg (free)</li>
-						<li>.Net Memory profiler (from $189)</li>
-						<li>Linq! :) (free and cool)</li>
-					</ul>
-				</ul>
-			</section>
+            // More info https://github.com/hakimel/reveal.js#dependencies
+            dependencies: [
+                { src: 'plugin/markdown/marked.js' },
+                { src: 'plugin/markdown/markdown.js' },
+                { src: 'plugin/notes/notes.js', async: true },
+                { src: 'plugin/highlight/highlight.js', async: true, callback: function () { hljs.initHighlightingOnLoad(); } },
+                { src: 'plugin/tagcloud/tagcloud.js', async: true }
+            ]
+        });
 
-			<section>
-				<h2>Summary</h2>
-
-				<h3>ETW</h3>
-				<ul>
-					<li>Fast symantic logging</li>
-					<li>Supported from Windows 7</li>
-					<li>Helps on prod enviroments</li>
-					<li>Will be supported on .NET Core (even on Linux:)</li>
-				</ul>
-			</section>
-
-			<section>
-				<h2>Tools</h2>
-
-				<ul>
-					<li>
-						Windows Performance Analyzer (<a href="https://msdn.microsoft.com/en-us/library/windows/hardware/hh448170.aspx">WPA</a>)
-						is a tool that creates graphs and data tables of Event Tracing for Windows (ETW) events that are recorded by Windows® Performance Recorder (WPR), Xperf, or an assessment that is run in the Assessment Platform. WPA can open any event trace log (ETL) file for analysis.
-					</li>
-					<!--https://msdn.microsoft.com/en-us/library/dn450840.aspx - Creating a Regions of Interest File-->
-
-					<li>
-						Xperf (<a href="https://msdn.microsoft.com/en-us/library/hh162952.aspx ">Xperf</a>
-						Xperf actions are trace processing components that collate event information to produce text reports. Actions produce summarized reports that are specific to a set of events such as registry accesses, context switches, file accesses, or system configuration.
-					</li>
-
-					<li>PerfView</li>			
-
-				</ul>
-			</section>			
-
-			<section>
-				<h2>Usefull links</h2>
-				
-				<ul>
-					<li><a href="https://github.com/dotnet/corefxlab">corefxlab github repo</a> - This repo is for experimentation and exploring new ideas that may or may not make it into the main corefx repo.</li>
-
-				</ul>
-
-			</section>
-
-			<section>
-				<h2>Slide 2</h2>
-
-				<pre>
-					<code data-trim data-noescape>
-var a = 0;
-for (int i = 0; i < n; i++)
-	a += i;
-					</code>
-				</pre>
-			</section>
-		</div>
-	</div>
-
-	<script src="lib/js/head.min.js"></script>
-	<script src="js/reveal.js"></script>
-
-	<script>
-			// More info https://github.com/hakimel/reveal.js#configuration
-			Reveal.initialize({
-				history: true,
-
-				// More info https://github.com/hakimel/reveal.js#dependencies
-				dependencies: [
-					{ src: 'plugin/markdown/marked.js' },
-					{ src: 'plugin/markdown/markdown.js' },
-					{ src: 'plugin/notes/notes.js', async: true },
-					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-					{ src: 'plugin/tagcloud/tagcloud.js', async: true }
-				]
-			});
-
-			//  "c/t":  flattened slide number / total slides
-			Reveal.configure({ slideNumber: 'c/t' });
-		</script>
+        //  "c/t":  flattened slide number / total slides
+        Reveal.configure({ slideNumber: 'c/t' });
+    </script>
 </body>
-
 </html>
