@@ -1,0 +1,50 @@
+
+
+<li>Crashes & dumps analysis</li>
+<ul>
+    <li>Getting dumps (tools, dump types, what type of information it includes?)</li>
+    <li>.NET Memory profiler (only profiler that can open dumps)</li>
+    TODO screenshot
+    <li>Visual studio (base info: loaded dlls, stacks, last exception)</li>
+    TODO check how it works with full dumps
+    <li>WinDbg (ask audience how knows? how can? how did?)</li>
+    TODO screenshot
+    <li>Workflow: open dump, google for cheatsheet, start adventure! (very like to vim:)</li>
+    <li>"True way" LINQ to Dump</li>
+    https://github.com/Microsoft/clrmd
+    https://blogs.msdn.microsoft.com/dotnet/2013/05/01/net-crash-dump-and-live-process-inspection/
+    https://github.com/Microsoft/dotnetsamples/tree/master/Microsoft.Diagnostics.Runtime/CLRMD
+    https://github.com/JeffCyr/ClrMD.Extensions
+    http://gigi.nullneuron.net/gigilabs/analyzing-live-process-memory-with-clrmd/
+    https://dzone.com/articles/traversing-gc-heap-clrmd
+    https://blogs.msdn.microsoft.com/chaun/2013/11/12/steps-to-catch-a-simple-crash-dump-of-a-crashing-process/ getting Dump with DebugDiag
+    https://blogs.msdn.microsoft.com/chaun/2013/11/19/steps-to-log-all-net-exceptions-to-a-log-file-with-debug-diag-2-0/
+
+    <li>"True way" LINQ to Dump and Live process</li>
+    DEMO LinqPad
+
+    <li>Tip: always deploy pdb files with apps</li>
+</ul>
+
+<section>
+    <h2>How to create dump?</h2>
+    <ul>
+        <li>Task Manager: process context menu => Create dump file</li>
+        <li>Debug* - ui tool (forgot the name)</li>
+        <li>Sysinternals Process Explorer (possible to create Mini/Full dump)</li>
+        <li>Sysinternals <a href="http://aka.ms/procdump">procdump</a>: on exception, on hang, on cpu/memory threshold, on perf counter threshold...</li>
+        <li>
+            Configure automatic dump for specific app crash
+            (<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/bb787181(v=vs.85).aspx">link</a>)
+        </li>
+    </ul>
+</section>
+
+<section>
+    <h2>How to analyze dump?</h2>
+    <ul>
+        <li>WinDbg (free)</li>
+        <li>.Net Memory profiler (from $189)</li>
+        <li>Linq! :) (free and cool)</li>
+    </ul>
+</section>

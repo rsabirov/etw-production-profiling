@@ -9,6 +9,10 @@
     <!-- Theme used for syntax highlighting of code -->
     <link rel="stylesheet" href="lib/css/zenburn.css">
     <style>
+        img {
+            border: 0;
+        }
+
         /*********************************************
         * TAGCLOUD
         *********************************************/
@@ -34,15 +38,16 @@
             <!--title slide-->
             <section>
                 <h2>.NET applications production profiling</h2>
-                <p>highlighted on dotNext conference</p>
+                <p>
+                    Rail Sabirov</>
 
-                <aside class="notes">
-                    Goal is give overview of tools for production troubleshouting.
-                </aside>
+                    <aside class="notes">
+                        Goal is give overview of tools for production troubleshouting.
+                    </aside>
             </section>
 
             <!--dotNext themes tag cloud-->
-            <section>
+            <!--<section>
                 <h2>dotNext conference themes</h2>
 
                 <section tagcloud shuffle>
@@ -62,29 +67,34 @@
                     <span tagcloud-weight="5">Reshaper</span>
                     <span tagcloud-weight="8">ASP.NET&nbsp;Core</span>
                 </section>
-            </section>
-
-            <!--plan-->
-            <section>
-                <h2>Plan</h2>
-                <ul>
-                    <li>Demo: performance profiling</li>
-                    <li>What is ETW?</li>
-                    <li>Demo: memory trafic profiling</li>
-                    <li>ETW and creating own events</li>
-                    <li>Tools</li>
-                    <li>Links</li>
-                </ul>
-            </section>
-
-
-
-            <!--demo 1-->
-            <section>
-                <h2>Demo 1</h2>
 
                 <aside class="notes">
-                    Demo 1: demonstraiting CPU profiling of .NET app.
+                    This presentation was inspired by dotNext conference.
+                </aside>
+            </section>-->
+            <!--How we are profiling on dev enviroment?-->
+            <section>
+                <h2>How we are profiling on dev enviroment?</h2>
+                <ol>
+                    <li>run some cool profiler!</li>
+                    <li>make some load</li>
+                    <li>analyze results in beautiful profiler UI</li>
+                </ol>
+            </section>
+
+            <!--Why production profiling harder?-->
+            <section>
+                <h2>Why production profiling harder?</h2>
+                <ul>
+                    <li class="fragment">we can not reproduce prod issue on dev environment</li>
+                    <li class="fragment">we should not affect running instance (stop or slow down)</li>
+                    <li class="fragment">we have to collect environmental information (cpu, memory, disk io, hard faults, network io...)</li>
+                    <li class="fragment">we can not install profiler</li>
+                </ul>
+
+                <aside class="notes">
+                    Some of the problems can be solved using Sampling profiling, but there are still some problems like:
+                    collecting wall clock time (including block/wait time), impossible to track activities.
                 </aside>
             </section>
 
@@ -92,15 +102,15 @@
             <section>
                 <h2>Event Tracing for Windows (ETW)</h2>
                 <ul>
-                    <li>Symantic logging</li>
-                    <li>Introduced on Windows 2000</li>
-                    <li>Blazzzing fast</li>
-                    <li>Used in all Windows components and inside .NET</li>
-                    <li>Supported on .NET Core (Linux support is comming)</li>
+                    <li>Symantic logging (each event and source has schema)</li>
+                    <li>Fast</li>
+                    <li>Used in internal Windows components</li>
+                    <li>Used in .NET CLR</li>
+                    <li>Introduced on Windows 2000 (Windows Vista)</li>
                 </ul>
 
                 <aside class="notes">
-                    a general-purpose, high-speed tracing facility provided by the operating system.
+                    ETW a general-purpose, high-speed tracing facility provided by the operating system.
                     Using a buffering and logging mechanism implemented in the kernel, ETW provides a tracing mechanism for
                     events raised by both user-mode applications and kernel-mode device drivers.
                     Additionally, ETW gives you the ability to enable and disable logging dynamically,
@@ -147,33 +157,102 @@
                 </dl>
             </section>
 
-            <!--slides there we can see ETW:
-            TODO screenshots
-            - procmon
-            - performance datacollectors
-            - performance monitor-->
-
-
-            <!--logman tool-->
+            <!--demo 1: PerfView overview-->
             <section>
-                <h2>logman</h2>
+                <h2>Demo 1</h2>
+
+                <aside class="notes">
+                    Give overview of PerfView tool:
+
+                    1) how to get it
+                    2) how to find help
+                    3) how to collect data
+                    4) how to find events
+                    5) ?demonstraiting CPU profiling of .NET app.
+                </aside>
+            </section>
+
+            <!--How to create own events sources? Schema-->
+            <section>
+                <h2>How to create own events sources?</h2>
+
+                <p>just create 100 line xml schema</p>
+                <img src="img/etw-schema.png" />
+            </section>
+
+            <!--Easier way for creating events source-->
+            <section>
+                <h2>Easier way for creating events source</h2>
+
+                <img src="img/simplest-event-sources.png" />
+
+                <aside class="notes">
+                    Now we can use System.Diagnostics.Tracing.EventSource. It included in .NET Framework and
+                    support publishing events, controlling sessions, consuming events from session. No schema needed,
+                    it will be generated and published to session.
+                </aside>
+            </section>
+
+
+            <!--demo 2, 3...-->
+            <section>
+                <h2>Demo 2, 3, ...</h2>
+
+                <aside class="notes">
+                    Demo 2: simplest EventSource:
+                    - supports not only primitive types
+                    - can check is it allowed?
+                    - show how profiling affects performance
+
+                    Demo 3: activity tracking
+                    - Start/Stop methods
+                    - framework will assign Tracking Id on each Start method
+                    - will keep it across threads !!
+                    - works with Task (async/await)
+
+                    Demo 4: memory profiling
+                    - I did not know before that is possible to get so much details about internals of GC
+                </aside>
+            </section>
+
+            <section>
+                <h2>Best practices</h2>
 
                 <ul>
                     <li>
-                        <code>
-                            Logman query providers
-                        </code>
-                        to get all available providers
+                        <pre><code data-trim data-noescape>
+#if DEBUG
+    if (MinimalEventSource.Log.ConstructionException != null)
+        throw MinimalEventSource.Log.ConstructionException;
+#endif
+                </code></pre>
                     </li>
-
                     <li>
-                        <code>
-                            Logman -start MyTrace -pf providers.txt –ets
-                        </code>
-                        start ETW Tracing
-
+                        
                     </li>
                 </ul>
+            </section>
+
+            <!--Who else uses ETW? procmon-->
+            <section>
+                <h2>Who else uses ETW?</h2>
+                <img src="img/procmon.png" />
+            </section>
+
+            <!--Who else uses ETW? resource-mon-->
+            <section>
+                <h2>Who else uses ETW?</h2>
+                <img src="img/resource-mon.png" />
+            </section>
+
+            <!--Who else uses ETW? system-event-trace-sessions-->
+            <section>
+                <h2>Who else uses ETW?</h2>
+                <img src="img/system-event-trace-sessions.png" />
+
+                <aside class="notes">
+                    Powerfull collectors inside windows. You can create own collectors with own trace sources.
+                </aside>
             </section>
 
             <!--Tools-->
@@ -185,14 +264,20 @@
                     <li>tracerpt.exe - a general consumer tool (<a href="https://technet.microsoft.com/en-us/library/cc732700(v=ws.11).aspx">Technet article</a>)</li>
                     <li>
                         Windows Performance Analyzer (<a href="https://msdn.microsoft.com/en-us/library/windows/hardware/hh448170.aspx">WPA</a>)
-                        is a tool that creates graphs and data tables of Event Tracing for Windows (ETW) events that are recorded by Windows® Performance Recorder (WPR), Xperf, or an assessment that is run in the Assessment Platform. WPA can open any event trace log (ETL) file for analysis.
+                        is a tool that creates graphs and data tables of ETW
                     </li>
                     <!--https://msdn.microsoft.com/en-us/library/dn450840.aspx - Creating a Regions of Interest File-->
                     <li>
-                        Xperf (<a href="https://msdn.microsoft.com/en-us/library/hh162952.aspx ">Xperf</a>
-                        Xperf actions are trace processing components that collate event information to produce text reports. Actions produce summarized reports that are specific to a set of events such as registry accesses, context switches, file accesses, or system configuration.
+                        <a href="https://msdn.microsoft.com/en-us/library/hh162952.aspx">Xperf</a>
+                        actions are trace processing components that collate event information to produce text reports
+                    </li>
+                    <li class="fragment">
+                        Even google has own ETW tool :)
+                        <a href="https://github.com/google/UIforETW">https://github.com/google/UIforETW</a>
                     </li>
                 </ul>
+
+                <aside>There are lot of tools around ETW. Collectors and event analyzers.</aside>
             </section>
 
             <!--Usefull links-->
@@ -200,8 +285,39 @@
                 <h2>Usefull links</h2>
 
                 <ul>
-                    <li><a href="https://github.com/dotnet/corefxlab">corefxlab github repo</a> - This repo is for experimentation and exploring new ideas that may or may not make it into the main corefx repo.</li>
+                    <li>
+                        <a href="https://channel9.msdn.com/Series/PerfView-Tutorial">Channel9 PerfView tutorial</a>
+                    </li>
+                    <li>
+                        <a href="https://blogs.msdn.microsoft.com/vancem/tag/eventsource/">Blog posts about ETW</a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/Microsoft/Microsoft.Diagnostics.Tracing.Logging">Microsoft.Diagnostics.Tracing.Logging repo</a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/Microsoft/dotnetsamples/blob/master/Microsoft.Diagnostics.Tracing/TraceEvent/docs/TraceEvent.md">
+                            The TraceEvent Library Programmers Guide
+                        </a>
+                    </li>
+                    <li><a href="http://blogs.msmvps.com/kathleen/2013/08/16/summary-of-etw-support-in-net/">Summary of ETW support in .NET</a></li>
                 </ul>
+            </section>
+
+            <!--What remains out of scope of this presentation?-->
+            <section>
+                <h2>What remains out of scope of this presentation?</h2>
+
+                <ul>
+                    <li>Memory profiling</li>
+                    <li>Controlling sessions using .NET</li>
+                    <li>Collecting events using .NET</li>
+                    <li>Cool tools around ETW</li>
+                </ul>
+            </section>
+
+            <!--Questions?-->
+            <section>
+                <h1>Questions?</h1>
             </section>
         </div>
     </div>
@@ -224,7 +340,10 @@
         });
 
         //  "c/t":  flattened slide number / total slides
-        Reveal.configure({ slideNumber: 'c/t' });
+        Reveal.configure({
+            slideNumber: 'c/t',
+            showNotes: false
+        });
     </script>
 </body>
 </html>
