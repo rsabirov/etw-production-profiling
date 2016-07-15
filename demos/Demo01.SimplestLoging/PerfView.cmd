@@ -1,0 +1,1 @@
+"../../tools/PerfView.exe" /OnlyProviders=*MinimalEventSource run bin/Release/Demo01.SimplestLoging.exe
