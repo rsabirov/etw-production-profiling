@@ -9,10 +9,6 @@
     <!-- Theme used for syntax highlighting of code -->
     <link rel="stylesheet" href="lib/css/zenburn.css">
     <style>
-        img {
-            border: 0;
-        }
-
         /*********************************************
         * TAGCLOUD
         *********************************************/
@@ -39,39 +35,14 @@
             <section>
                 <h2>.NET applications production profiling</h2>
                 <p>
-                    Rail Sabirov</>
+                    Rail Sabirov
 
                     <aside class="notes">
-                        Goal is give overview of tools for production troubleshouting.
+                        Goal is give overview of using ETW for production troubleshouting.
                     </aside>
             </section>
 
-            <!--dotNext themes tag cloud-->
-            <!--<section>
-                <h2>dotNext conference themes</h2>
 
-                <section tagcloud shuffle>
-                    <span tagcloud-weight="8">.NET&nbsp;Core</span>
-                    <span tagcloud-weight="5">Profiling</span>
-                    <span tagcloud-weight="5">ETW</span>
-                    <span tagcloud-weight="8">Perfomance</span>
-                    <span tagcloud-weight="5">Docker</span>
-                    IL
-                    Rider
-                    PerfView
-                    CLR
-                    Concurency
-                    SPA
-                    WCF
-                    CoreCLR
-                    <span tagcloud-weight="5">Reshaper</span>
-                    <span tagcloud-weight="8">ASP.NET&nbsp;Core</span>
-                </section>
-
-                <aside class="notes">
-                    This presentation was inspired by dotNext conference.
-                </aside>
-            </section>-->
             <!--How we are profiling on dev enviroment?-->
             <section>
                 <h2>How we are profiling on dev enviroment?</h2>
@@ -103,9 +74,11 @@
                 <h2>Event Tracing for Windows (ETW)</h2>
                 <ul>
                     <li>Symantic logging (each event and source has schema)</li>
-                    <li>Fast</li>
-                    <li>Used in internal Windows components</li>
-                    <li>Used in .NET CLR</li>
+                    <li>Fast if enabled</li>
+                    <li>Doesn't affects performance if disabled</li>
+                    <li>Can drop events if "performance not enough"</li>
+                    <li>Used internally in Windows</li>
+                    <li>Used in .NET CLR (provides detailed info about CLR, JIT, GC...)</li>
                     <li>Introduced on Windows 2000 (Windows Vista)</li>
                 </ul>
 
@@ -159,7 +132,8 @@
 
             <!--demo 1: PerfView overview-->
             <section>
-                <h2>Demo 1</h2>
+                <h2>Demo 0</h2>
+                <h1>PerfView tool overview</h1>
 
                 <aside class="notes">
                     Give overview of PerfView tool:
@@ -168,16 +142,18 @@
                     2) how to find help
                     3) how to collect data
                     4) how to find events
-                    5) ?demonstraiting CPU profiling of .NET app.
                 </aside>
             </section>
 
             <!--How to create own events sources? Schema-->
             <section>
-                <h2>How to create own events sources?</h2>
-
+                <h2>How to create events source?</h2>
                 <p>just create 100 line xml schema</p>
-                <img src="img/etw-schema.png" />
+                <img src="img/etw-schema.png" width="450px" />
+
+                <aside class="notes">
+                    Native way is to define xml schema for everything.
+                </aside>
             </section>
 
             <!--Easier way for creating events source-->
@@ -187,50 +163,56 @@
                 <img src="img/simplest-event-sources.png" />
 
                 <aside class="notes">
-                    Now we can use System.Diagnostics.Tracing.EventSource. It included in .NET Framework and
+                    Now we can use System.Diagnostics.Tracing.EventSource. It is included in .NET Framework and
                     support publishing events, controlling sessions, consuming events from session. No schema needed,
                     it will be generated and published to session.
                 </aside>
             </section>
 
 
-            <!--demo 2, 3...-->
+            <!--demo 1, 2...-->
             <section>
-                <h2>Demo 2, 3, ...</h2>
+                <h2>Demo 1, 2, ...</h2>
 
                 <aside class="notes">
-                    Demo 2: simplest EventSource:
+                    Demo 1: simplest EventSource:
                     - supports not only primitive types
-                    - can check is it allowed?
-                    - show how profiling affects performance
+                    - shows how profiling affects performance
 
-                    Demo 3: activity tracking
-                    - Start/Stop methods
+                    Demo 2: activity tracking
+                    - Start/Stop methods => Time automaticaly calculated.
                     - framework will assign Tracking Id on each Start method
                     - will keep it across threads !!
                     - works with Task (async/await)
 
-                    Demo 4: memory profiling
-                    - I did not know before that is possible to get so much details about internals of GC
+                    Demo 3: memory profiling
+                    - code will generate memory leak
+                    - PerfView will give a lot of details about internals of GC
                 </aside>
             </section>
 
+            <!--Best practices: coding-->
             <section>
                 <h2>Best practices</h2>
 
                 <ul>
-                    <li>
-                        <pre><code data-trim data-noescape>
+                    <li>Use primitive types if possible</li>
+                    <li>Use IsEnabled function if calculation of values for event takes memory/cpu</li>
+                    <li>Create separate EventSource for highly detailed logging</li>
+                </ul>
+            </section>
+
+            <!--Best practices: ConstructionException-->
+            <section>
+                <h2>Best practices</h2>
+
+                Check ConstructionException at least on Debug configuration
+<pre><code data-trim data-noescape class="cs">
 #if DEBUG
     if (MinimalEventSource.Log.ConstructionException != null)
         throw MinimalEventSource.Log.ConstructionException;
 #endif
-                </code></pre>
-                    </li>
-                    <li>
-                        
-                    </li>
-                </ul>
+</code></pre>
             </section>
 
             <!--Who else uses ETW? procmon-->
@@ -242,13 +224,13 @@
             <!--Who else uses ETW? resource-mon-->
             <section>
                 <h2>Who else uses ETW?</h2>
-                <img src="img/resource-mon.png" />
+                <img src="img/resource-mon.png" width="700px" />
             </section>
 
             <!--Who else uses ETW? system-event-trace-sessions-->
             <section>
                 <h2>Who else uses ETW?</h2>
-                <img src="img/system-event-trace-sessions.png" />
+                <img src="img/system-event-trace-sessions.png" width="700px" />
 
                 <aside class="notes">
                     Powerfull collectors inside windows. You can create own collectors with own trace sources.
@@ -299,7 +281,12 @@
                             The TraceEvent Library Programmers Guide
                         </a>
                     </li>
-                    <li><a href="http://blogs.msmvps.com/kathleen/2013/08/16/summary-of-etw-support-in-net/">Summary of ETW support in .NET</a></li>
+                    <li>
+                        <a href="http://blogs.msmvps.com/kathleen/2013/08/16/summary-of-etw-support-in-net/">Summary of ETW support in .NET</a>
+                    </li>
+                    <li>
+                        <a href="https://msdn.microsoft.com/en-us/library/ff357719(v=vs.110).aspx">ETW Events in the Common Language Runtime</a>
+                    </li>
                 </ul>
             </section>
 
